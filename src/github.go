@@ -56,7 +56,11 @@ type RemoteFile struct {
 	// RelPath is the path relative to the root directory that was walked.
 	RelPath string
 }
-func getGithubDirContentsRecursive(repo, branch, path string) ([]RemoteFile, error) {
+func getGithubDirContentsRecursive(repo, branch, root string) ([]RemoteFile, error) {
+	return getGithubDirContentsRecursiveWithRoot(repo, branch, root, root)
+}
+
+func getGithubDirContentsRecursiveWithRoot(repo, branch, root, path string) ([]RemoteFile, error) {
 	entries, err := getGithubDirContents(repo, branch, path)
 	if err != nil {
 		return nil, err
@@ -71,7 +75,7 @@ func getGithubDirContentsRecursive(repo, branch, path string) ([]RemoteFile, err
 
 		entryPath := path + "/" + name
 		if entry.GetType() == "dir" {
-			nested, err := getGithubDirContentsRecursive(repo, branch, entryPath)
+			nested, err := getGithubDirContentsRecursiveWithRoot(repo, branch, root, entryPath)
 			if err != nil {
 				return nil, err
 			}
@@ -81,7 +85,7 @@ func getGithubDirContentsRecursive(repo, branch, path string) ([]RemoteFile, err
 
 		files = append(files, RemoteFile{
 			Path:    entryPath,
-			RelPath: strings.TrimPrefix(entryPath, path+"/"),
+			RelPath: strings.TrimPrefix(entryPath, root+"/"),
 		})
 	}
 
