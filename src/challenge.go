@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"strings"
 )
 
 type Challenge struct {
@@ -61,8 +62,8 @@ func jsonFormatChallengeConfig(challengeConfig *ChallengeConfig) string {
 }
 
 func filesDir(challengeConfig *ChallengeConfig) string {
-	if challengeConfig.Challenge.HandoutDir != "" {
-		return challengeConfig.Challenge.HandoutDir
+	if handoutDir := strings.Trim(challengeConfig.Challenge.HandoutDir, "/"); handoutDir != "" {
+		return handoutDir
 	}
 	return "handout"
 }
